@@ -35,18 +35,48 @@
   opacity: 0;
 }
 
-.button{
-  position: absolute;
-  height: 50px;
-  width: 100px;
-  bottom: 10px;
+button{
+  margin-top: 5px;
+  margin-left: 5px;
+  height: 40px;
+  width: 70px;
+  border-radius: 10px;
+  background-color: rgb(60, 142, 218);
+  outline: none;
+  box-shadow: none;
+}
+
+span{
+  font-size: large;
+  margin-top: 8px;  
+  margin: 10px;
+}
+
+button:focus{
+  outline: none;
 }
 
 .square{
   width: 40px;
   height: 40px;
-  background-color: green;
   border: 1px solid gray;
+  border-left: none ;
+}
+
+.green{
+  background-color: rgb(41, 126, 7);
+}
+
+.blue{
+  background-color: rgb(19, 84, 170);
+}
+
+.yellow{
+  background-color: rgb(233, 201, 22);
+}
+
+.red{
+  background-color: rgb(170, 42, 19);
 }
 
 .score{
@@ -61,8 +91,4 @@
 
 .g-row{
   display: flex;
-}
-
-.fill{
-  background-color: green;
 }

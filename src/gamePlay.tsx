@@ -2,7 +2,6 @@
 import { CreateElement } from "./createElement"
 import React, {useState } from "react"
 import uniqid from 'uniqid'
-import { getElement } from "./elements"
 import { field, cords, configuration } from './types' 
 
 const config : configuration = {
@@ -17,26 +16,26 @@ export const GamePlay = () => {
 
   const initial : field[][] = new Array(config.rows).fill(null).map(r =>new Array(config.columns).fill(null).map(() => {return{isFill:false}}))
 
-  const [state, setState] = useState([...initial])
-  const [active, setActive] = useState(false)
-  const [score, setScore]= useState(0)
+  const [state, setState] = useState<field[][]>(initial)
+  const [active, setActive] = useState<boolean>(false)
+  const [score, setScore]= useState<number>(0)
 
-  const reset = () => {
+  const reset = () : void => {
     setActive(false)
     setState(initial)
     setScore(0)
   }
   
-  const onLose = () => {
+  const onLose = () : void => {
     alert('you score : '+ score)
     reset()
   }
 
-  const setBlocks = (arr : cords[]) : void => {
+  const setBlocks = (arr : cords[], color : string) : void => {
     let removed = 0
     setState(previous => {
 
-      arr.forEach(({y, x}) => previous[y][x].isFill = true)
+      arr.forEach(({y, x}) => previous[y][x] = {isFill:true, color})
       previous = previous.filter((row) => !row.every(e => e.isFill))
 
       while(previous.length < config.rows){
@@ -51,13 +50,14 @@ export const GamePlay = () => {
     setScore(p => p + removed)
   }
 
-  const isFreeBlocks = (arr : cords[]): boolean => arr.every(({y, x}) => state[y][x].isFill === false)
+  const isFreeBlocks = (arr : cords[]): boolean => {
+    return arr.every(({y, x}) => state[y][x].isFill === false)
+  }
 
   return <div className="game-container b" id = 'game-container'>
     <div className='spawn-element b'>
       <CreateElement  
         config={config} 
-        element={getElement()} 
         setBlocks={setBlocks} 
         isFreeBlocks={isFreeBlocks}
         onLose={onLose}
@@ -71,7 +71,11 @@ export const GamePlay = () => {
   </div>
 }
 
-const Row : React.FC<{row : field[]}> = ({row}) => <div className='g-row'>{row.map(field => <Field field={field} key={uniqid()}/>)}</div>
+const Row : React.FC<{row : field[]}> = ({row}) => <div className='g-row'>
+    {row.map(field => <Field field={field} key={uniqid()}/>)}
+  </div>
 
-const Field :  React.FC<{field : field}> = ({field}) => <div className={field.isFill? 'field fill' : 'field empty'}></div>
+const Field :  React.FC<{field : field}> = ({field}) => <div 
+    className={field.isFill? 'field fill ' + field.color : 'field empty'}>
+  </div>
 

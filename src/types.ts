@@ -9,13 +9,6 @@ export interface field {
   color? : string
 }
 
-export interface element {
-  width : number,
-  height : number,
-  squares : cords[],
-  Component : React.FC
-}
-
 export interface configuration {
   rows : number,
   columns : number,
@@ -26,8 +19,8 @@ export interface configuration {
 
 export interface componentProps {
   config: configuration
-  element : element
-  setBlocks : (arr:cords[]) => void 
+  // element : element
+  setBlocks : (arr:cords[], color:string) => void 
   isFreeBlocks : (arr:cords[]) => void 
   onLose : () => void 
   active : boolean  
