@@ -18,13 +18,13 @@ export const CreateElement : React.FC<componentProps> = ({config, setBlocks, isF
     if(!block) return
 
     if(!active || !element){
-      block.style.top = -160 + 'px'
+      block.style.top = -200 + 'px'
       return
     }
 
     let {width, height} = getProperties(element)
-    let offsetLeft : number =  random(config.columns - width)
-    let offSetTop : number = -1
+    let offsetLeft : number =  random((config.columns - 1) - width) + 1
+    let offSetTop : number = 0
     let offSetTopPx : number = 0
     let count : number = 0
 
@@ -49,36 +49,49 @@ export const CreateElement : React.FC<componentProps> = ({config, setBlocks, isF
           )
             offsetLeft += 1
         break;
-        case ' ':
+        case 'ArrowDown':
+          offSetTopPx += config.step * 5
+          count += 5
+        break;
+        case 'Enter':
           const newCords : cords[] = rotateCords(element)
-          if((offsetLeft + getProperties(newCords).width <= config.columns) && isFreeBlocks(newCords)){
+          if((offsetLeft + getProperties(newCords).width <= config.columns) && 
+            isFreeBlocks(getCurrentCords(offSetTop, offsetLeft, newCords)))
+          {
             element = newCords
-            setState({
-              array: cordsToArray(newCords),
-              color
-            })
           }
         break;
+        case ' ' :
+          while(offSetTop + 1 < config.rows && isFreeBlocks(getCurrentCords(offSetTop + 1, offsetLeft, element))){
+            offSetTop += 1
+          }
+        break
       }
     }
-      
+    
     const onInterval = (): void => {
       offSetTopPx += config.step
       count++
-      if(count + 1 === config.size / config.step){
+      if(count > config.size / config.step){
         if(offSetTop < config.rows - 1 && isFreeBlocks(getCurrentCords(offSetTop+1, offsetLeft, element))){
           offSetTop += 1
+          offSetTopPx = offSetTop * config.size;
         }else{
-          if(offSetTop < height) onLose()
-          offSetTopPx = 0
+          offSetTopPx = -200
           setBlocks(getCurrentCords(offSetTop, offsetLeft, element), color)  
+          if(offSetTop < height) {
+            onLose()
+          }
         }
         count = 0 
       }
-      if(block){
-        block.style.top = offSetTopPx + 'px'
-        block.style.left = offsetLeft * config.size + 'px'
-      }
+      if(!block) return
+      block.style.top = offSetTopPx + 'px'
+      block.style.left = offsetLeft * config.size + 'px'
+      setState({
+        array: cordsToArray(element),
+        color
+      })
     }
 
     let interval = setInterval(onInterval, config.interval)

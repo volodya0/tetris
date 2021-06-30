@@ -2,8 +2,23 @@
   box-sizing: border-box;
 }
 
+.container{
+  display: flex;
+  justify-content: center;
+}
+
+.info{
+  padding: 10px;
+  width: 300px;
+}
+
+.info p {
+  margin: 0;
+  padding: 3px;
+}
+
 .game-container{
-  margin: auto;
+  margin: 0 10px;
   width: 402px;
   height: 100vh;
 }
@@ -47,9 +62,10 @@ button{
 }
 
 span{
+  padding: 6px 20px   ;
   font-size: large;
-  margin-top: 8px;  
-  margin: 10px;
+  margin: 4px;  
+  border-radius: 20px;
 }
 
 button:focus{

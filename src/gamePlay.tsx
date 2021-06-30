@@ -1,6 +1,6 @@
 /* eslint-disable default-case */
 import { CreateElement } from "./createElement"
-import React, {useState } from "react"
+import React, {useEffect, useState } from "react"
 import uniqid from 'uniqid'
 import { field, cords, configuration } from './types' 
 
@@ -27,6 +27,7 @@ export const GamePlay = () => {
   }
   
   const onLose = () : void => {
+    setActive(false)
     alert('you score : '+ score)
     reset()
   }
@@ -50,11 +51,16 @@ export const GamePlay = () => {
     setScore(p => p + removed)
   }
 
-  const isFreeBlocks = (arr : cords[]): boolean => {
-    return arr.every(({y, x}) => state[y][x].isFill === false)
+  function isFreeBlocks(arr : cords[]): boolean{
+    if(arr.every(({y, x}) => state[y][x].isFill === false)){
+      return true
+    }else{
+      return false
+    }
   }
 
-  return <div className="game-container b" id = 'game-container'>
+  return <div className='container'>
+  <div className="game-container b" id = 'game-container'>
     <div className='spawn-element b'>
       <CreateElement  
         config={config} 
@@ -67,15 +73,37 @@ export const GamePlay = () => {
     <div>{state.map(row => <Row row={row} key={uniqid()}/>)}</div>
     <button onClick={() => setActive(true)}>Start</button>
     <button onClick={reset}>Reset</button>
-    <span className='score'>Score {score}</span>
+    <Score count={score} />
   </div>
+  <div className='info'>
+    <p>Arrow left/right : control</p>
+    <p>Enter : flip</p>
+    <p>Arrow down : speed</p>
+    <p>Space : set now</p>
+  </div>
+  </div>
+}
+
+const Score : React.FC<{count : number}> = ({count}) =>{
+  useEffect(() => {
+    let block : HTMLSpanElement | null = document.querySelector('.score')
+    if(block)
+    block.style.backgroundColor = 'gold'
+
+    setTimeout(() => {
+      if(block)
+      block.style.backgroundColor = 'transparent'
+    }, 1000)
+
+  }, [count])
+  return <span className='score'>Score {count}</span>
 }
 
 const Row : React.FC<{row : field[]}> = ({row}) => <div className='g-row'>
     {row.map(field => <Field field={field} key={uniqid()}/>)}
   </div>
 
-const Field :  React.FC<{field : field}> = ({field}) => <div 
+const Field :  React.FC<{field : field}> = ({field}) =>  <div 
     className={field.isFill? 'field fill ' + field.color : 'field empty'}>
   </div>
 

@@ -38,12 +38,6 @@ const rotateArray = (arr : boolean[][]): boolean[][] => {
 
 export const rotateCords = (cords : cords[]) => {
 
-  const {width} = getProperties(cords)
-
-  if(width === 4){
-    return [{y:0, x:0}, {y:1,x:0}, {y:2,x:0}, {y:3,x:0}]
-  }
-
   let arr = cordsToArray(cords)
   let rotatedArr = rotateArray(arr)
 
@@ -58,11 +52,15 @@ export const rotateCords = (cords : cords[]) => {
     y_arr.push(obj.y)
   })
 
-  if(x_arr.every(x => x > 0))
+  while(x_arr.every(x => x > 0)){
     rotatedCords.forEach(obj => obj.x = obj.x - 1)
+    x_arr = x_arr.map(e => e - 1)
+  }  
   
-  if(y_arr.every(y => y > 0))
+  while(y_arr.every(y => y > 0)){
     rotatedCords.forEach(obj => obj.y = obj.y - 1)
+    x_arr = x_arr.map(e => e - 1)
+  }  
   
   return rotatedCords
 }
