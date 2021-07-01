@@ -23,10 +23,12 @@ export const CreateElement : React.FC<componentProps> = ({config, setBlocks, isF
     }
 
     let {width, height} = getProperties(element)
+    let stepsOnSquare : number = config.size / config.step
     let offsetLeft : number =  random((config.columns - 1) - width) + 1
     let offSetTop : number = 0
     let offSetTopPx : number = 0
     let count : number = 0
+  
 
     block.style.left = offsetLeft * config.size +'px'
     
@@ -38,41 +40,53 @@ export const CreateElement : React.FC<componentProps> = ({config, setBlocks, isF
     const keyboardHandler = (e : KeyboardEvent) : void => {
     if(offSetTop > 0)
       switch (e.key) {
+
         case 'ArrowLeft':
-          if(offsetLeft > 0 && isFreeBlocks(getCurrentCords(offSetTop, offsetLeft - 1, element)))
+          if(
+            offsetLeft > 0 && 
+            isFreeBlocks(getCurrentCords(offSetTop, offsetLeft - 1, element))&&
+            (count + 5 > stepsOnSquare || isFreeBlocks(getCurrentCords(offSetTop - 1, offsetLeft - 1, element)))
+          )
             offsetLeft -= 1
         break;
+
         case 'ArrowRight':
           if(
             offsetLeft + getProperties(element).width < config.columns && 
-            isFreeBlocks(getCurrentCords(offSetTop, offsetLeft + 1, element))
+            isFreeBlocks(getCurrentCords(offSetTop, offsetLeft + 1, element))&&
+            (count + 5 > stepsOnSquare || isFreeBlocks(getCurrentCords(offSetTop - 1, offsetLeft + 1, element)))
           )
             offsetLeft += 1
         break;
+
+        case 'Enter':
+          const rotatedElement : cords[] = rotateCords(element)
+          if(
+            (offsetLeft + getProperties(rotatedElement).width <= config.columns) && 
+            isFreeBlocks(getCurrentCords(offSetTop, offsetLeft, rotatedElement)) &&
+            isFreeBlocks(getCurrentCords(offSetTop-1, offsetLeft, rotatedElement))
+          )
+          element = rotatedElement
+        break;
+
         case 'ArrowDown':
           offSetTopPx += config.step * 5
           count += 5
         break;
-        case 'Enter':
-          const newCords : cords[] = rotateCords(element)
-          if((offsetLeft + getProperties(newCords).width <= config.columns) && 
-            isFreeBlocks(getCurrentCords(offSetTop, offsetLeft, newCords)))
-          {
-            element = newCords
-          }
-        break;
+      
         case ' ' :
-          while(offSetTop + 1 < config.rows && isFreeBlocks(getCurrentCords(offSetTop + 1, offsetLeft, element))){
+          while(offSetTop + 1 < config.rows && isFreeBlocks(getCurrentCords(offSetTop + 1, offsetLeft, element)))
             offSetTop += 1
-          }
         break
       }
     }
     
     const onInterval = (): void => {
+      if(!block) return
+      
       offSetTopPx += config.step
       count++
-      if(count > config.size / config.step){
+      if(count > stepsOnSquare){
         if(offSetTop < config.rows - 1 && isFreeBlocks(getCurrentCords(offSetTop+1, offsetLeft, element))){
           offSetTop += 1
           offSetTopPx = offSetTop * config.size;
@@ -85,9 +99,8 @@ export const CreateElement : React.FC<componentProps> = ({config, setBlocks, isF
         }
         count = 0 
       }
-      if(!block) return
-      block.style.top = offSetTopPx + 'px'
       block.style.left = offsetLeft * config.size + 'px'
+      block.style.top = offSetTopPx + 'px'
       setState({
         array: cordsToArray(element),
         color
