@@ -1,3 +1,5 @@
+Deployed : https://volodya0.github.io/tetris/
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
