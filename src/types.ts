@@ -15,6 +15,7 @@ export interface configuration {
   size : number,
   interval : number,
   step : number,
+  blocks : Set<string>
 }
 
 export interface componentProps {
@@ -24,6 +25,13 @@ export interface componentProps {
   isFreeBlocks : (arr:cords[]) => void 
   onLose : () => void 
   active : boolean  
+}
+
+
+export interface sidebarProps {
+  active : boolean
+  selectSpeedHandler : (e : React.ChangeEvent<HTMLInputElement>) => void
+  selectBlocksHandler : (e : React.ChangeEvent<HTMLInputElement>) => void
 }
 
   

@@ -3,22 +3,66 @@ import { CreateElement } from "./createElement"
 import React, {useEffect, useState } from "react"
 import uniqid from 'uniqid'
 import { field, cords, configuration } from './types' 
+import { Sidebar } from "./sidebar"
 
-const config : configuration = {
+const configInit : configuration = {
   rows : 15,
   columns : 10,
   size : 40,
-  interval : 10,
+  interval : 18,
   step : 2,
+  blocks : new Set(['Cube', 'Line', 'T', 'L', 'Z', 'U'])
 }
 
 export const GamePlay = () => {
 
-  const initial : field[][] = new Array(config.rows).fill(null).map(r =>new Array(config.columns).fill(null).map(() => {return{isFill:false}}))
+  const [config, setConfig] = useState(configInit)
 
+  const initial : field[][] = new Array(config.rows).fill(null).map(r =>new Array(config.columns).fill(null).map(() => {return{isFill:false}}))
+  
   const [state, setState] = useState<field[][]>(initial)
   const [active, setActive] = useState<boolean>(false)
   const [score, setScore]= useState<number>(0)
+
+  const selectBlocksHandler = (e : React.ChangeEvent<HTMLInputElement>): void => {
+    if(!e) return
+    setConfig(conf => {
+      if(e.target.checked)
+        conf.blocks.add(e.target.name)
+      else
+        conf.blocks.delete(e.target.name)
+
+      return {...conf}
+    })
+  }
+
+  const selectSpeedHandler = (e : React.ChangeEvent<HTMLInputElement>) : void => {
+    let interval : number = 0
+    let step : number = 0
+    switch (e.target.value) {
+      case "1":
+        step = 1
+        interval = 16
+        break;
+      case "2":
+        step = 1
+        interval = 12
+        break;
+      case "3":
+        step = 2
+        interval = 18
+        break;
+      case "4":
+        step = 2
+        interval = 14
+      break;
+      case "5":
+        step = 2
+        interval = 10
+      break;
+    }
+    setConfig({...config, step, interval})
+  }
 
   const reset = () : void => {
     setActive(false)
@@ -75,12 +119,10 @@ export const GamePlay = () => {
     <button onClick={reset}>Reset</button>
     <Score count={score} />
   </div>
-  <div className='info'>
-    <p>Arrow left/right : control</p>
-    <p>Enter : flip</p>
-    <p>Arrow down : speed</p>
-    <p>Space : set now</p>
-  </div>
+   <Sidebar 
+    active={active} 
+    selectSpeedHandler={selectSpeedHandler} 
+    selectBlocksHandler={selectSpeedHandler}/>
   </div>
 }
 

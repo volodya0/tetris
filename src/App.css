@@ -7,14 +7,31 @@
   justify-content: center;
 }
 
-.info{
+.sidebar{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
   padding: 10px;
   width: 300px;
 }
 
+.speed-settings input{
+  margin-left: 10px;
+}
+
+.blocks-settings div{
+  margin-top: 5px;
+}
+
+.link{
+  position: relative;
+  bottom: 0;
+  margin-top: 25px;
+}
+
 .info p {
   margin: 0;
-  padding: 3px;
+  padding: 0;
 }
 
 .game-container{

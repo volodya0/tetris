@@ -2,12 +2,9 @@ import { cords } from './types'
 
 const random = (max : number): number => Math.floor(Math.random() * max)
 
-export function getElement(type? : string) : cords[]{
-  let types : string[] = Object.keys(elements)
-  if(type && types.includes(type)) 
-    return elements[type]
-  else
-    return elements[types[random(types.length)]]
+export function getElement(blocks : Set<string>) : cords[]{
+  let keys : string[] = Array.from(blocks)
+  return elements[keys[random(keys.length)]]
 }
 
 export function getColor() : string{

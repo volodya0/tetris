@@ -11,7 +11,7 @@ export const CreateElement : React.FC<componentProps> = ({config, setBlocks, isF
   const [state, setState] = useState<{array:boolean[][], color:string}>({array:[], color:''})
     
   useEffect(() => {
-    let element : cords[] = getElement()
+    let element : cords[] = getElement(config.blocks)
     let color : string = getColor()
     let block : HTMLDivElement | null = document.querySelector('.animate')
     
@@ -59,7 +59,7 @@ export const CreateElement : React.FC<componentProps> = ({config, setBlocks, isF
             offsetLeft += 1
         break;
 
-        case 'Enter':
+        case 'ArrowUp':
           const rotatedElement : cords[] = rotateCords(element)
           if(
             (offsetLeft + getProperties(rotatedElement).width <= config.columns) && 
