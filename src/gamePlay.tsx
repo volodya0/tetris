@@ -122,7 +122,7 @@ export const GamePlay = () => {
    <Sidebar 
     active={active} 
     selectSpeedHandler={selectSpeedHandler} 
-    selectBlocksHandler={selectSpeedHandler}/>
+    selectBlocksHandler={selectBlocksHandler}/>
   </div>
 }
 
