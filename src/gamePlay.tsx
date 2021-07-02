@@ -37,8 +37,8 @@ export const GamePlay = () => {
   }
 
   const selectSpeedHandler = (e : React.ChangeEvent<HTMLInputElement>) : void => {
-    let interval : number = 0
-    let step : number = 0
+    let interval : number = 2
+    let step : number = 18
     switch (e.target.value) {
       case "1":
         step = 1
