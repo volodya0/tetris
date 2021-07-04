@@ -14,7 +14,6 @@ export const CreateElement : React.FC<componentProps> = ({config, setBlocks, isF
     let element : cords[] = getElement(config.blocks)
     let color : string = getColor()
     let block : HTMLDivElement | null = document.querySelector('.animate')
-    
     if(!block) return
 
     if(!active || !element){
@@ -25,8 +24,9 @@ export const CreateElement : React.FC<componentProps> = ({config, setBlocks, isF
     let {width, height} = getProperties(element)
     let stepsOnSquare : number = config.size / config.step
     let offsetLeft : number =  random((config.columns - 1) - width) + 1
-    let offSetTop : number = 0
-    let offSetTopPx : number = 0
+    let offsetLeftDelay : {position : number, offset : number} | null = null
+    let offsetTop : number = 0
+    let offsetTopPx : number = 0
     let count : number = 0
   
 
@@ -38,69 +38,94 @@ export const CreateElement : React.FC<componentProps> = ({config, setBlocks, isF
     })
 
     const keyboardHandler = (e : KeyboardEvent) : void => {
-    if(offSetTop > 0)
-      switch (e.key) {
+      if(offsetTop > 0 && block){
 
-        case 'ArrowLeft':
-          if(
-            offsetLeft > 0 && 
-            isFreeBlocks(getCurrentCords(offSetTop, offsetLeft - 1, element))&&
-            (count + 5 > stepsOnSquare || isFreeBlocks(getCurrentCords(offSetTop - 1, offsetLeft - 1, element)))
-          )
-            offsetLeft -= 1
+        offsetLeftDelay = null
+        switch (e.key) {
+
+          case 'ArrowLeft':
+
+            if(offsetLeft > 0)
+              if(
+                isFreeBlocks(getCurrentCords(offsetTop, offsetLeft - 1, element))&&
+                isFreeBlocks(getCurrentCords(offsetTop - 1, offsetLeft - 1, element))
+              ){
+                offsetLeft -= 1
+                block.style.left = offsetLeft * config.size + 'px'
+              }else{
+                offsetLeftDelay = {position : offsetTop, offset : offsetLeft - 1}
+              }
+
+          break;
+
+          case 'ArrowRight':
+            
+            if(offsetLeft + getProperties(element).width < config.columns)
+              if(
+                isFreeBlocks(getCurrentCords(offsetTop, offsetLeft + 1, element))&&
+                isFreeBlocks(getCurrentCords(offsetTop - 1, offsetLeft + 1, element))
+              ){
+                offsetLeft += 1
+                block.style.left = offsetLeft * config.size + 'px'
+              }else{
+                offsetLeftDelay = {position : offsetTop, offset : offsetLeft + 1}
+              }
+
         break;
 
-        case 'ArrowRight':
-          if(
-            offsetLeft + getProperties(element).width < config.columns && 
-            isFreeBlocks(getCurrentCords(offSetTop, offsetLeft + 1, element))&&
-            (count + 5 > stepsOnSquare || isFreeBlocks(getCurrentCords(offSetTop - 1, offsetLeft + 1, element)))
-          )
-            offsetLeft += 1
-        break;
+          case 'ArrowUp':
+            const rotatedElement : cords[] = rotateCords(element)
+            if(
+              (offsetLeft + getProperties(rotatedElement).width <= config.columns) && 
+              isFreeBlocks(getCurrentCords(offsetTop, offsetLeft, rotatedElement)) &&
+              isFreeBlocks(getCurrentCords(offsetTop-1, offsetLeft, rotatedElement))
+            )
+            element = rotatedElement
+          break;
 
-        case 'ArrowUp':
-          const rotatedElement : cords[] = rotateCords(element)
-          if(
-            (offsetLeft + getProperties(rotatedElement).width <= config.columns) && 
-            isFreeBlocks(getCurrentCords(offSetTop, offsetLeft, rotatedElement)) &&
-            isFreeBlocks(getCurrentCords(offSetTop-1, offsetLeft, rotatedElement))
-          )
-          element = rotatedElement
-        break;
-
-        case 'ArrowDown':
-          offSetTopPx += config.step * 5
-          count += 5
-        break;
-      
-        case ' ' :
-          while(offSetTop + 1 < config.rows && isFreeBlocks(getCurrentCords(offSetTop + 1, offsetLeft, element)))
-            offSetTop += 1
-        break
+          case 'ArrowDown':
+            offsetTopPx += config.step * 5
+            count += 5
+          break;
+        
+          case ' ' :
+            while(offsetTop + 1 < config.rows && isFreeBlocks(getCurrentCords(offsetTop + 1, offsetLeft, element))){
+              offsetTop += 1
+              count = stepsOnSquare + 1
+            }
+          break
+        }
       }
     }
     
     const onInterval = (): void => {
       if(!block) return
-      
-      offSetTopPx += config.step
+      offsetTopPx += config.step
       count++
       if(count > stepsOnSquare){
-        if(offSetTop < config.rows - 1 && isFreeBlocks(getCurrentCords(offSetTop+1, offsetLeft, element))){
-          offSetTop += 1
-          offSetTopPx = offSetTop * config.size;
+
+        if(
+          offsetLeftDelay && 
+          isFreeBlocks(getCurrentCords(offsetTop, offsetLeftDelay.offset, element))&&
+          offsetTop - offsetLeftDelay.position < 3
+        ){
+          offsetLeft = offsetLeftDelay.offset
+          block.style.left = offsetLeft * config.size + 'px'
+        }
+
+        if(offsetTop < config.rows - 1 && isFreeBlocks(getCurrentCords(offsetTop+1, offsetLeft, element))){
+          offsetTop += 1
+          offsetTopPx = offsetTop * config.size;
         }else{
-          offSetTopPx = -200
-          setBlocks(getCurrentCords(offSetTop, offsetLeft, element), color)  
-          if(offSetTop < height) {
+          offsetTopPx = -200
+          setBlocks(getCurrentCords(offsetTop, offsetLeft, element), color)  
+          if(offsetTop < height) {
             onLose()
           }
         }
         count = 0 
       }
-      block.style.left = offsetLeft * config.size + 'px'
-      block.style.top = offSetTopPx + 'px'
+      block.style.top = offsetTopPx + 'px'
       setState({
         array: cordsToArray(element),
         color

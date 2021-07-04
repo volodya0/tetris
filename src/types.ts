@@ -22,7 +22,7 @@ export interface componentProps {
   config: configuration
   // element : element
   setBlocks : (arr:cords[], color:string) => void 
-  isFreeBlocks : (arr:cords[]) => void 
+  isFreeBlocks : (arr:cords[]) =>  boolean 
   onLose : () => void 
   active : boolean  
 }
